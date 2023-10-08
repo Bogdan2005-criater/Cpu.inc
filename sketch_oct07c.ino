@@ -4,7 +4,6 @@
 #include <GyverBME280.h>
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
-#include <String.h>
 // объявляем объект, для управления дисплеем указываем пины
 LiquidCrystal lcd(2,3,4,5,6,7);
 
@@ -61,31 +60,20 @@ void setup() {
 }
 void loop(){
   float humidity = dht.readHumidity();     // Считываем влажность
-  float temperatureC = dht.readtemperatureC(); // Считываем температуру в градусах Цельсия
+  float temperature = dht.readTemperature(); // Считываем температуру в градусах Цельсия
     // Отправка данных на сервер Flask
-  gsmSerial.println("AT+HTTPPARA=\"URL\",\"http://your_flask_server_url_here\"");
-  delay(1000);
-  gsmSerial.println("AT+HTTPDATA=" + String(strlen("{\"temperatureC\":" + String(temperatureC) + ",\"humidity\":" + String(humidity) + "}")) + ",10000");
-  delay(1000);
-  gsmSerial.println("{\"temperatureC\":" + String(temperatureC) + ",\"humidity\":" + String(humidity) + "}");
-  delay(1000);
-  gsmSerial.println("AT+HTTPACTION=1");
-  delay(5000); // Подождите некоторое время для завершения операции HTTP
-  
-  // Ваш дополнительный код здесь
-  
-  delay(60000); // Подождите 60 секунд перед отправкой следующей порции данных
+
   lcd.begin(16, 2); 
   lcd.clear();  
   lcd.setCursor(0,0); 
-  if (isnan(humidity) || isnan(C)) {
+  if (isnan(humidity) || isnan(temperature)) {
     lcd.print("Error #1");
   } else {
     lcd.print("Humidity: ");
     lcd.print(humidity);
     lcd.setCursor(0,1); 
     lcd.print("TempC: ");
-    lcd.println(temperatureC);
+    lcd.println(temperature);
     lcd.print("C");
   }
 
